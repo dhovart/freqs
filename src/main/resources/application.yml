@@ -1,0 +1,39 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          spotify:
+            client-id: ${SPOTIFY_CLIENT_ID}
+            client-secret: ${SPOTIFY_CLIENT_SECRET}
+            scope: user-read-email,user-read-private
+            redirect-uri: ${BASE_URL}/login/oauth2/code/{registrationId}
+            authorization-grant-type: authorization_code
+        provider:
+          spotify:
+            authorization-uri: https://accounts.spotify.com/authorize
+            token-uri: https://accounts.spotify.com/api/token
+            user-info-uri: https://api.spotify.com/v1/me
+            user-name-attribute: id
+  graphql:
+    graphiql:
+      enabled: ${ENABLE_GRAPHIQL}
+      path: /graphiql
+
+  session:
+    store-type: redis
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+logging:
+  level:
+    web: debug
+    org:
+      springframework:
+        security: DEBUG
+
+encryption:
+  password: ${ENCRYPTION_PASSWORD}
