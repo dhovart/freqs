@@ -36,8 +36,7 @@ class AuthenticatedUserRepository(val reactiveRedisComponent: ReactiveRedisCompo
     }
 
     fun remove(id: UUID): Mono<Void> {
-        reactiveRedisComponent.remove(KEY, id)
-        return Mono.empty()
+        return reactiveRedisComponent.remove(KEY, id).then()
     }
 
 }
