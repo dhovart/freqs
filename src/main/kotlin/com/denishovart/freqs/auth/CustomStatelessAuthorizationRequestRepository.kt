@@ -21,7 +21,7 @@ class CustomStatelessAuthorizationRequestRepository(
     override fun loadAuthorizationRequest(exchange: ServerWebExchange): Mono<OAuth2AuthorizationRequest> {
         val authCookie = exchange.getAuthRequestCookie()
         val authId = authCookie?.value ?: return Mono.empty()
-        return authRequestHolderRepository.findById(UUID.fromString(authId))
+        return authRequestHolderRepository.findById(authId)
             .map { holder ->
                 Base64.decrypt(holder.payload)
             }
@@ -31,7 +31,7 @@ class CustomStatelessAuthorizationRequestRepository(
         val authCookie = exchange.getAuthRequestCookie()
         val authId = authCookie?.value ?: return Mono.empty()
         exchange.removeAuthRequestCookie()
-        return authRequestHolderRepository.findById(UUID.fromString(authId))
+        return authRequestHolderRepository.findById(authId)
             .flatMap { holder ->
                 authRequestHolderRepository.remove(holder.id)
                     .thenReturn(Base64.decrypt(holder.payload))

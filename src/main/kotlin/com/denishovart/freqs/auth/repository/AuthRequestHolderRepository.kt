@@ -14,7 +14,7 @@ class AuthRequestHolderRepository(val reactiveRedisComponent: ReactiveRedisCompo
         const val KEY = "AuthRequestHolder"
     }
 
-    fun findById(id: UUID): Mono<AuthRequestHolder> {
+    fun findById(id: String): Mono<AuthRequestHolder> {
         return reactiveRedisComponent
             .get(KEY, id)
             .map { it as LinkedHashMap<*, *> }

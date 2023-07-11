@@ -27,7 +27,7 @@ class CustomAuthenticationConverter(
                                     UsernamePasswordAuthenticationToken(
                                         authenticatedUser,
                                         null,
-                                        authenticatedUser.token!!.authorities
+                                        authenticatedUser.authorities
                                     )
                                 ReactiveSecurityContextHolder.withAuthentication(authentication)
                                 Mono.just(authentication)

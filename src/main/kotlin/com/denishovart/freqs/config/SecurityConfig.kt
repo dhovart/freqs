@@ -2,7 +2,6 @@ package com.denishovart.freqs.config
 
 import com.denishovart.freqs.auth.*
 import com.denishovart.freqs.auth.filter.CustomRedirectFilter
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode
@@ -12,12 +11,10 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.core.Authentication
-import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository
 import reactor.core.publisher.Mono
-
 
 @Configuration
 @EnableWebFluxSecurity
@@ -25,14 +22,12 @@ import reactor.core.publisher.Mono
 class SecurityConfig(
     val customStatelessAuthorizationRequestRepository: CustomStatelessAuthorizationRequestRepository,
     val customStatelessAuthorizationRequestResolver: CustomStatelessAuthorizationRequestResolver,
-    val customAuthorizedClientService: ReactiveOAuth2AuthorizedClientService,
+    val customAuthorizedClientService: CustomAuthorizedClientService,
     val oAuth2AuthenticationSuccessHandler: OAuth2AuthenticationSuccessHandler,
     val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     val customRedirectFilter: CustomRedirectFilter,
-    val objectMapper: ObjectMapper,
     private val authenticationConverter: CustomAuthenticationConverter,
 ) {
-
     @Bean
     fun authenticationManager(): ReactiveAuthenticationManager? {
         return ReactiveAuthenticationManager {
@@ -49,7 +44,6 @@ class SecurityConfig(
 
     @Bean
     fun securityWebFilterChain(httpSecurity: ServerHttpSecurity): SecurityWebFilterChain {
-
         return httpSecurity
             .csrf { it.disable() }
             .cors { it.disable() }

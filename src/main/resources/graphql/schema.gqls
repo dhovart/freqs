@@ -20,6 +20,7 @@ type User {
 
 type Query {
     me: User!
+    search(term: String): String
     party(id: ID!): Party
     track(id: ID!): Track
 }
