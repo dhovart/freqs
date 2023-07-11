@@ -1,6 +1,5 @@
 package com.denishovart.freqs.auth.service
 
-import com.denishovart.freqs.api.entity.User
 import com.denishovart.freqs.helper.Base64
 import com.denishovart.freqs.auth.entity.AuthenticatedUser
 import com.denishovart.freqs.auth.repository.AuthenticatedUserRepository

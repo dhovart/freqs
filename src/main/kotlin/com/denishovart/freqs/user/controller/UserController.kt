@@ -1,6 +1,6 @@
-package com.denishovart.freqs.api.controller
+package com.denishovart.freqs.user.controller
 
-import com.denishovart.freqs.api.entity.User
+import com.denishovart.freqs.user.document.User
 import com.denishovart.freqs.auth.entity.AuthenticatedUser
 import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.security.core.annotation.AuthenticationPrincipal

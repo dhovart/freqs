@@ -1,6 +1,6 @@
 package com.denishovart.freqs.auth.entity
 
-import com.denishovart.freqs.api.entity.User
+import com.denishovart.freqs.user.document.User
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import java.util.*

@@ -1,4 +1,4 @@
-package com.denishovart.freqs.api.controller
+package com.denishovart.freqs.party.controller
 
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping

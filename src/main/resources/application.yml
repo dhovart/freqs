@@ -20,9 +20,6 @@ spring:
       enabled: ${ENABLE_GRAPHIQL}
       path: /graphiql
 
-  session:
-    store-type: redis
-
   data:
     redis:
       host: ${REDIS_HOST}
@@ -37,3 +34,6 @@ logging:
 
 encryption:
   password: ${ENCRYPTION_PASSWORD}
+
+database:
+  name: ${DATABASE_NAME}
