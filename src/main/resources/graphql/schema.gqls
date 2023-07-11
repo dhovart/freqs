@@ -1,0 +1,30 @@
+type Track {
+    id: ID!
+    name: String!
+    duration: Float!
+    artists: [String]!
+}
+
+type Party {
+    id: ID!
+    name: String!
+    currentTrack: Track
+    playlist: [Track]!
+}
+
+type User {
+    id: ID!
+    name: String!
+    picture: String
+}
+
+type Query {
+    me: User!
+    party(id: ID!): Party
+    track(id: ID!): Track
+}
+
+type Mutation {
+    createParty(name: String!): Party
+    addTrack(partyID: ID!): Track
+}
