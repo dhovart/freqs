@@ -9,7 +9,7 @@ class SpotifyService {
 
     private val webClient: WebClient = WebClient.create("https://api.spotify.com")
 
-    fun search(token: String, query: String): Mono<String> {
+    fun search(token: String, query: String): Mono<Object> {
         return webClient.get()
             .uri { uriBuilder ->
                 uriBuilder
@@ -20,6 +20,6 @@ class SpotifyService {
             }
             .header("Authorization", "Bearer $token")
             .retrieve()
-            .bodyToMono(String::class.java)
+            .bodyToMono(Object::class.java)
     }
 }

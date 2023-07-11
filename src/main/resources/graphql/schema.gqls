@@ -18,9 +18,11 @@ type User {
     picture: String
 }
 
+scalar JsonNode
+
 type Query {
     me: User!
-    search(term: String): String
+    search(term: String): JsonNode
     party(id: ID!): Party
     track(id: ID!): Track
 }
