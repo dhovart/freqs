@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode
 import org.springframework.security.authentication.ReactiveAuthenticationManager
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder
@@ -14,7 +15,11 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.reactive.CorsConfigurationSource
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 import reactor.core.publisher.Mono
+
 
 @Configuration
 @EnableWebFluxSecurity
@@ -28,6 +33,19 @@ class SecurityConfig(
     val customRedirectFilter: CustomRedirectFilter,
     private val authenticationConverter: CustomAuthenticationConverter,
 ) {
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowCredentials = true
+        configuration.allowedOriginPatterns = listOf("*") // FIXME
+//        configuration.allowedOrigins = mutableListOf("http://blah")
+        configuration.allowedMethods = mutableListOf("*")
+        configuration.allowedHeaders = mutableListOf("*")
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
     @Bean
     fun authenticationManager(): ReactiveAuthenticationManager? {
         return ReactiveAuthenticationManager {
@@ -46,7 +64,7 @@ class SecurityConfig(
     fun securityWebFilterChain(httpSecurity: ServerHttpSecurity): SecurityWebFilterChain {
         return httpSecurity
             .csrf { it.disable() }
-            .cors { it.disable() }
+            .cors(Customizer.withDefaults())
             .formLogin { it.disable() }
             .httpBasic { it.disable() }
             .authorizeExchange {

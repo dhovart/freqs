@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class CustomAuthenticationConverter(
-    private @Value("\${encryption.password}") val encryptionPassword: String,
+    private @Value("\${app.encryption.password}") val encryptionPassword: String,
     private val authenticatedUserService: AuthenticatedUserService
 ) : ServerAuthenticationConverter {
     override fun convert(exchange: ServerWebExchange): Mono<Authentication?> {

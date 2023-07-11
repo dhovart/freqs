@@ -32,8 +32,11 @@ logging:
       springframework:
         security: DEBUG
 
-encryption:
-  password: ${ENCRYPTION_PASSWORD}
+app:
+  encryption:
+    password: ${ENCRYPTION_PASSWORD}
+  redirectToOnSuccessfulAuthentication: ${FRONTEND_REDIRECTION_URL}
 
 database:
   name: ${DATABASE_NAME}
+
