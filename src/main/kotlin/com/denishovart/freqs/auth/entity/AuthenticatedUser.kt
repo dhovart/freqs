@@ -1,12 +1,10 @@
 package com.denishovart.freqs.auth.entity
 
 import com.denishovart.freqs.user.document.User
-import org.springframework.data.redis.core.RedisHash
 import org.springframework.security.core.GrantedAuthority
 import java.util.*
 
 
-@RedisHash
 data class AuthenticatedUser(
     val id: String = "",
     val provider: String = "",
