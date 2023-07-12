@@ -2,6 +2,8 @@ package com.denishovart.freqs.config
 
 import com.denishovart.freqs.auth.*
 import com.denishovart.freqs.auth.filter.CustomRedirectFilter
+import com.denishovart.freqs.auth.repository.CustomStatelessAuthorizationRequestRepository
+import com.denishovart.freqs.auth.service.CustomAuthorizedClientService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode

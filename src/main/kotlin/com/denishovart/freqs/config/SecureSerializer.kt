@@ -1,27 +1,42 @@
-package com.denishovart.freqs.helper
+package com.denishovart.freqs.config
+
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
+import java.security.SecureRandom
+import java.security.spec.KeySpec
+import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import java.security.SecureRandom
-import java.security.spec.KeySpec
-import java.util.Base64
+import kotlin.collections.LinkedHashMap
 
-object EncryptionUtil {
-    private const val ENCRYPTION_ALGORITHM = "AES"
-    private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
-    private const val KEY_LENGTH = 256
-    private const val ITERATIONS = 10000
-    private const val SALT_LENGTH = 16
+@Component
+class SecureSerializer(
+    private val objectMapper: ObjectMapper,
+    @Value("\${app.encryption.password}")
+    private val password: String
+) {
+    companion object {
+        private const val ENCRYPTION_ALGORITHM = "AES"
+        private const val SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256"
+        private const val KEY_LENGTH = 256
+        private const val ITERATIONS = 10000
+        private const val SALT_LENGTH = 16
+    }
 
-    fun encrypt(value: String, password: String): String {
+    fun <T : Any> encrypt(value: T): String {
         val salt = generateSalt()
         val secretKey = generateSecretKey(salt, password)
 
         val cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        val encryptedBytes = cipher.doFinal(value.toByteArray())
+
+        val serializedObject = serializeObject(value)
+        val encryptedBytes = cipher.doFinal(serializedObject)
 
         // Combine salt and encrypted data
         val combinedBytes = ByteArray(SALT_LENGTH + encryptedBytes.size)
@@ -31,7 +46,7 @@ object EncryptionUtil {
         return Base64.getEncoder().encodeToString(combinedBytes)
     }
 
-    fun decrypt(value: String, password: String): String {
+    fun <T : Any> decrypt(value: String, targetType: Class<T>): T {
         val combinedBytes = Base64.getDecoder().decode(value)
         val salt = ByteArray(SALT_LENGTH)
         val encryptedBytes = ByteArray(combinedBytes.size - SALT_LENGTH)
@@ -45,7 +60,8 @@ object EncryptionUtil {
         cipher.init(Cipher.DECRYPT_MODE, secretKey)
         val decryptedBytes = cipher.doFinal(encryptedBytes)
 
-        return String(decryptedBytes)
+        val deserializedObject = deserializeObject<T>(decryptedBytes, targetType)
+        return deserializedObject as T
     }
 
     private fun generateSalt(): ByteArray {
@@ -60,5 +76,14 @@ object EncryptionUtil {
         val spec: KeySpec = PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH)
         val tmp: SecretKey = factory.generateSecret(spec)
         return SecretKeySpec(tmp.encoded, ENCRYPTION_ALGORITHM)
+    }
+
+    private fun serializeObject(obj: Any): ByteArray {
+        val serializedString = objectMapper.writeValueAsString(obj)
+        return serializedString.toByteArray()
+    }
+
+    private fun <T> deserializeObject(bytes: ByteArray, targetType: Class<T>): T {
+        return objectMapper.readValue(String(bytes), targetType)
     }
 }

@@ -1,5 +1,6 @@
 package com.denishovart.freqs.auth
 
+import com.denishovart.freqs.config.SecureSerializer
 import com.denishovart.freqs.helper.setAuthCookie
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -16,7 +17,7 @@ import java.util.*
 @Component
 class OAuth2AuthenticationSuccessHandler(
     val logger: Logger,
-    @Value("\${app.encryption.password}") val password: String,
+    val secureSerializer: SecureSerializer,
     @Value("\${app.redirectToOnSuccessfulAuthentication}") val redirectUrl: String
 ) : ServerAuthenticationSuccessHandler {
     override fun onAuthenticationSuccess(
@@ -29,7 +30,7 @@ class OAuth2AuthenticationSuccessHandler(
         response.headers.location = URI(redirectUrl)
 
         val id = "${(authentication as OAuth2AuthenticationToken).authorizedClientRegistrationId}_${authentication.name}"
-        webFilterExchange.exchange.setAuthCookie(id, password)
+        webFilterExchange.exchange.setAuthCookie(id, secureSerializer)
         return response.setComplete()
     }
 }

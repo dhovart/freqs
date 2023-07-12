@@ -1,6 +1,6 @@
 package com.denishovart.freqs.auth.filter
 
-import com.denishovart.freqs.auth.CustomStatelessAuthorizationRequestRepository
+import com.denishovart.freqs.auth.repository.CustomStatelessAuthorizationRequestRepository
 import com.denishovart.freqs.auth.CustomStatelessAuthorizationRequestResolver
 import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException
 import org.springframework.security.oauth2.core.AuthorizationGrantType

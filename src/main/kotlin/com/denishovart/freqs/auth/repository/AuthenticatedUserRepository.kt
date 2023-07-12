@@ -1,5 +1,6 @@
 package com.denishovart.freqs.auth.repository
 import com.denishovart.freqs.auth.entity.AuthenticatedUser
+import com.denishovart.freqs.config.SecureSerializer
 import com.denishovart.freqs.data.ReactiveRedisComponent
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -12,8 +13,8 @@ import kotlin.collections.LinkedHashMap
 // FIXME make more more generic
 @Repository
 class AuthenticatedUserRepository(
-    val reactiveRedisComponent: ReactiveRedisComponent,
-    private val objectMapper: ObjectMapper
+    private val reactiveRedisComponent: ReactiveRedisComponent,
+    private val secureSerializer: SecureSerializer,
 ) {
 
     companion object {
@@ -24,24 +25,12 @@ class AuthenticatedUserRepository(
         return reactiveRedisComponent
             .get(KEY, id)
             .flatMap {
-            // For some reason this doesn't work (accessToken and refreshToken are empty on deserialization)
-            // Mono.just(objectMapper.convertValue(it, AuthenticatedUser::class.java) )
-                val value = it as LinkedHashMap<String, Any>
-                Mono.just(AuthenticatedUser(
-                    value["id"] as String,
-                    value["provider"] as String,
-                    value["attributes"] as LinkedHashMap<String, Any>,
-                    (value["authorities"] as List<LinkedHashMap<String, Any>>).map {
-                        SimpleGrantedAuthority(it["authority"] as String)
-                    },
-                    value["accessToken"] as String,
-                    value["refreshToken"] as String?,
-                ))
+                Mono.just(secureSerializer.decrypt(it as String, AuthenticatedUser::class.java))
             }
     }
 
     fun save(authenticatedUser: AuthenticatedUser): Mono<AuthenticatedUser> {
-        return reactiveRedisComponent.set(KEY, authenticatedUser.id, authenticatedUser).map { _ -> authenticatedUser }
+        return reactiveRedisComponent.set(KEY, authenticatedUser.id, secureSerializer.encrypt(authenticatedUser)).map { _ -> authenticatedUser }
     }
 
     fun remove(id: UUID): Mono<Void> {

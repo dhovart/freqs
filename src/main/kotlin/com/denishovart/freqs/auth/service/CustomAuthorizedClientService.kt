@@ -1,6 +1,5 @@
-package com.denishovart.freqs.auth
+package com.denishovart.freqs.auth.service
 
-import com.denishovart.freqs.auth.service.AuthenticatedUserService
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService

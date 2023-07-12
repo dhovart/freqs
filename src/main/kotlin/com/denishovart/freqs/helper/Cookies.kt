@@ -1,5 +1,6 @@
 package com.denishovart.freqs.helper
 
+import com.denishovart.freqs.config.SecureSerializer
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.web.server.ServerWebExchange
@@ -19,7 +20,7 @@ private fun buildResponseCookie(name: String, value: String?, duration: Duration
 
 fun ServerWebExchange.getAuthRequestCookie() =  this.request.cookies.getFirst(AUTH_REQUEST_COOKIE)
 
-fun ServerWebExchange.setAuthRequestCookie(value: String, duration: Duration = Duration.ofDays(1)) =
+fun ServerWebExchange.setAuthRequestCookie(value: String) =
     this.response.cookies.add(
         HttpHeaders.SET_COOKIE,
         buildResponseCookie(
@@ -38,13 +39,13 @@ fun ServerWebExchange.removeAuthRequestCookie() =
         this.request.uri.scheme == "https"
     ))
 
-fun ServerWebExchange.getAuthId(password: String): String? {
+fun ServerWebExchange.getAuthId(secureSerializer: SecureSerializer): String? {
     val cookie = this.request.cookies.getFirst(AUTH_COOKIE)
-    return if (cookie?.value != null) EncryptionUtil.decrypt(cookie!!.value, password) else null
+    return if (cookie?.value != null) secureSerializer.decrypt(cookie!!.value, String::class.java) else null
 }
 
-fun ServerWebExchange.setAuthCookie(value: String, password: String, duration: Duration = Duration.ofDays(999)) {
-    val encryptedValue = EncryptionUtil.encrypt(value, password)
+fun ServerWebExchange.setAuthCookie(value: String, secureSerializer: SecureSerializer, duration: Duration = Duration.ofDays(999)) {
+    val encryptedValue = secureSerializer.encrypt(value)
     return this.response.cookies.add(
         HttpHeaders.SET_COOKIE,
         buildResponseCookie(

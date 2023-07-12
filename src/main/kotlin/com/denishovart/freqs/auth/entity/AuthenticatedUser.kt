@@ -1,16 +1,10 @@
 package com.denishovart.freqs.auth.entity
 
 import com.denishovart.freqs.user.document.User
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.annotation.JsonNaming
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken
 import java.util.*
-import kotlin.collections.LinkedHashMap
+
 
 @RedisHash
 data class AuthenticatedUser(

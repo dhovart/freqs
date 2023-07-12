@@ -1,21 +1,21 @@
-package com.denishovart.freqs.auth
+package com.denishovart.freqs.auth.repository
 
-import com.denishovart.freqs.helper.getAuthRequestCookie
 import com.denishovart.freqs.auth.entity.AuthRequestHolder
-import com.denishovart.freqs.auth.repository.AuthRequestHolderRepository
+import com.denishovart.freqs.config.SecureSerializer
+import com.denishovart.freqs.helper.getAuthRequestCookie
+import com.denishovart.freqs.helper.removeAuthRequestCookie
+import com.denishovart.freqs.helper.setAuthRequestCookie
 import org.springframework.security.oauth2.client.web.server.ServerAuthorizationRequestRepository
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
-import com.denishovart.freqs.helper.removeAuthRequestCookie
-import com.denishovart.freqs.helper.setAuthRequestCookie
-import com.denishovart.freqs.helper.Base64
 import java.util.*
 
 @Component
 class CustomStatelessAuthorizationRequestRepository(
-    val authRequestHolderRepository: AuthRequestHolderRepository
+    val authRequestHolderRepository: AuthRequestHolderRepository,
+    val secureSerializer: SecureSerializer,
 ) : ServerAuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     override fun loadAuthorizationRequest(exchange: ServerWebExchange): Mono<OAuth2AuthorizationRequest> {
@@ -23,7 +23,7 @@ class CustomStatelessAuthorizationRequestRepository(
         val authId = authCookie?.value ?: return Mono.empty()
         return authRequestHolderRepository.findById(authId)
             .map { holder ->
-                Base64.decrypt(holder.payload)
+                secureSerializer.decrypt(holder.payload, OAuth2AuthorizationRequest::class.java)
             }
     }
 
@@ -34,7 +34,7 @@ class CustomStatelessAuthorizationRequestRepository(
         return authRequestHolderRepository.findById(authId)
             .flatMap { holder ->
                 authRequestHolderRepository.remove(holder.id)
-                    .thenReturn(Base64.decrypt(holder.payload))
+                    .thenReturn(secureSerializer.decrypt(holder.payload, OAuth2AuthorizationRequest::class.java))
             }
     }
 
@@ -49,7 +49,7 @@ class CustomStatelessAuthorizationRequestRepository(
         } else {
             val authRequestHolder = AuthRequestHolder(
                 UUID.randomUUID(),
-                Base64.encrypt(authorizationRequest)
+                secureSerializer.encrypt(authorizationRequest)
             )
             exchange.setAuthRequestCookie(authRequestHolder.id.toString())
             authRequestHolderRepository.save(authRequestHolder)
