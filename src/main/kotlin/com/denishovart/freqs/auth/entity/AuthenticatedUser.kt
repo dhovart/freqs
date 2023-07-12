@@ -13,7 +13,7 @@ data class AuthenticatedUser(
     val accessToken: String = "",
     val refreshToken: String? = ""
 ) {
-    fun toUserEntity(): User? {
+    fun toUserEntity(): User {
         val name = attributes["display_name"] as String
         val picture = (attributes["images"] as ArrayList<LinkedHashMap<String, String>>?)?.get(0)?.get("url")
         return User(UUID.nameUUIDFromBytes(id.toByteArray()), name, picture)

@@ -19,14 +19,17 @@ services:
     depends_on:
       - zookeeper
 
-  kafdrop:
-    image: 'obsidiandynamics/kafdrop'
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - '8083:8080'
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
     depends_on:
       - kafka
-    ports:
-      - '9000:9000'
-    environment:
-      KAFKA_BROKERCONNECT: 'kafka:9092'
+      - zookeeper
+    volumes:
+      - ~/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
 
   redis:
     image: 'redis:latest'
@@ -47,3 +50,12 @@ services:
       - '27017:27017'
     volumes:
       - ./data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    ports:
+      - '8082:8081'
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+    depends_on:
+      - mongo

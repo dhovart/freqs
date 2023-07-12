@@ -5,17 +5,18 @@ type Track {
     artists: [String]!
 }
 
-type Party {
-    id: ID!
-    name: String!
-    currentTrack: Track
-    playlist: [Track]!
-}
-
 type User {
     id: ID!
     name: String!
     picture: String
+}
+
+type Party {
+    id: ID!
+    name: String!
+    creator: User!
+    currentTrack: Track
+    playlist: [Track]!
 }
 
 scalar JsonNode
