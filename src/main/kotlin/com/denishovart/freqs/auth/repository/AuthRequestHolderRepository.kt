@@ -1,7 +1,6 @@
 package com.denishovart.freqs.auth.repository
 
 import com.denishovart.freqs.auth.entity.AuthRequestHolder
-import com.denishovart.freqs.auth.entity.AuthenticatedUser
 import com.denishovart.freqs.config.SecureSerializer
 import com.denishovart.freqs.data.ReactiveRedisComponent
 import org.springframework.stereotype.Repository
@@ -22,12 +21,12 @@ class AuthRequestHolderRepository(
         return reactiveRedisComponent
             .get(KEY, id)
             .flatMap {
-                Mono.just(it as AuthRequestHolder)
+                Mono.just(secureSerializer.decrypt(it as String, AuthRequestHolder::class.java))
             }
     }
 
     fun save(authRequestHolder: AuthRequestHolder): Mono<AuthRequestHolder> {
-        return reactiveRedisComponent.set(KEY, authRequestHolder.id.toString(), authRequestHolder).map { _ -> authRequestHolder }
+        return reactiveRedisComponent.set(KEY, authRequestHolder.id.toString(), secureSerializer.encrypt(authRequestHolder)).map { _ -> authRequestHolder }
     }
 
     fun remove(id: UUID): Mono<Void> {

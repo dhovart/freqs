@@ -1,12 +1,10 @@
 package com.denishovart.freqs.auth
 
-import com.denishovart.freqs.helper.getAuthId
 import com.denishovart.freqs.auth.service.AuthenticatedUserService
 import com.denishovart.freqs.config.SecureSerializer
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import com.denishovart.freqs.helper.getAuthId
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.ReactiveSecurityContextHolder
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.web.server.authentication.ServerAuthenticationConverter
 import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
@@ -14,7 +12,6 @@ import reactor.core.publisher.Mono
 
 @Component
 class CustomAuthenticationConverter(
-    private @Value("\${app.encryption.password}") val encryptionPassword: String,
     private val authenticatedUserService: AuthenticatedUserService,
     private val secureSerializer: SecureSerializer
 ) : ServerAuthenticationConverter {
@@ -26,16 +23,14 @@ class CustomAuthenticationConverter(
                         authenticatedUserService.loadAuthenticatedUser(authId)
                             .flatMap { authenticatedUser ->
                                 val authentication =
-                                    UsernamePasswordAuthenticationToken(
-                                        authenticatedUser.client!!.principalName,
-                                        null,
-                                        authenticatedUser.authorities
+                                    OAuth2AuthenticationToken(
+                                        authenticatedUser,
+                                        authenticatedUser.authorities,
+                                        authenticatedUser.client!!.clientRegistration.registrationId
                                     )
-                                ReactiveSecurityContextHolder.withAuthentication(authentication)
                                 Mono.just(authentication)
                             }
                             .onErrorResume {
-                                ReactiveSecurityContextHolder.clearContext()
                                 Mono.empty()
                             }
                     }

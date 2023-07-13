@@ -29,7 +29,7 @@ class OAuth2AuthenticationSuccessHandler(
         response.statusCode = HttpStatus.TEMPORARY_REDIRECT
         response.headers.location = URI(redirectUrl)
 
-        val id = "${(authentication as OAuth2AuthenticationToken).authorizedClientRegistrationId}_${authentication.name}"
+        val id = "${(authentication as OAuth2AuthenticationToken).authorizedClientRegistrationId}:${authentication.name}"
         webFilterExchange.exchange.setAuthCookie(id, secureSerializer)
         return response.setComplete()
     }

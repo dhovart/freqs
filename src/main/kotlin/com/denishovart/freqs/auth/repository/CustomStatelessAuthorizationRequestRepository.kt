@@ -14,17 +14,14 @@ import java.util.*
 
 @Component
 class CustomStatelessAuthorizationRequestRepository(
-    val authRequestHolderRepository: AuthRequestHolderRepository,
-    val secureSerializer: SecureSerializer,
+    val authRequestHolderRepository: AuthRequestHolderRepository
 ) : ServerAuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     override fun loadAuthorizationRequest(exchange: ServerWebExchange): Mono<OAuth2AuthorizationRequest> {
         val authCookie = exchange.getAuthRequestCookie()
         val authId = authCookie?.value ?: return Mono.empty()
         return authRequestHolderRepository.findById(authId)
-            .map { holder ->
-                secureSerializer.decrypt(holder.payload, OAuth2AuthorizationRequest::class.java)
-            }
+            .map { it.request }
     }
 
     override fun removeAuthorizationRequest(exchange: ServerWebExchange): Mono<OAuth2AuthorizationRequest> {
@@ -34,7 +31,7 @@ class CustomStatelessAuthorizationRequestRepository(
         return authRequestHolderRepository.findById(authId)
             .flatMap { holder ->
                 authRequestHolderRepository.remove(holder.id!!)
-                    .thenReturn(secureSerializer.decrypt(holder.payload, OAuth2AuthorizationRequest::class.java))
+                    .thenReturn(holder.request!!)
             }
     }
 
@@ -47,9 +44,9 @@ class CustomStatelessAuthorizationRequestRepository(
             exchange.removeAuthRequestCookie()
             Mono.empty()
         } else {
-            val authRequestHolder = AuthRequestHolder(
+            var authRequestHolder = AuthRequestHolder(
                 UUID.randomUUID(),
-                secureSerializer.encrypt(authorizationRequest)
+                authorizationRequest
             )
             exchange.setAuthRequestCookie(authRequestHolder.id.toString())
             authRequestHolderRepository.save(authRequestHolder)

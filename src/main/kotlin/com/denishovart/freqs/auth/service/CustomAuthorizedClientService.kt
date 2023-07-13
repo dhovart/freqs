@@ -3,6 +3,7 @@ package com.denishovart.freqs.auth.service
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -15,7 +16,7 @@ class CustomAuthorizedClientService(private val authenticatedUserService: Authen
         clientRegistrationId: String?,
         principalName: String?
     ): Mono<T> {
-        return authenticatedUserService.loadAuthenticatedUser("${clientRegistrationId}_$principalName").map {
+        return authenticatedUserService.loadAuthenticatedUser("${clientRegistrationId}:$principalName").map {
             it.client as T
         }
     }
@@ -25,6 +26,14 @@ class CustomAuthorizedClientService(private val authenticatedUserService: Authen
     }
 
     override fun saveAuthorizedClient(client: OAuth2AuthorizedClient, authentication: Authentication): Mono<Void>? {
-        return authenticatedUserService.saveNewAuthenticatedUser(client, authentication as OAuth2LoginAuthenticationToken).then()
+        when (authentication) {
+            is OAuth2LoginAuthenticationToken ->
+                return authenticatedUserService.saveAuthenticatedUserUsingOAuth2LoginAuthentication(client, authentication)
+                    .then()
+
+            is OAuth2AuthenticationToken ->
+                return authenticatedUserService.saveAuthenticatedUserUsingOAuth2Authentication(client, authentication).then()
+        }
+        return Mono.empty()
     }
 }
