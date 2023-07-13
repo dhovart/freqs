@@ -5,4 +5,8 @@ import com.denishovart.freqs.user.document.User
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-data class Party(var name: String, var creator: User): BaseDocument()
+class Party(
+    var name: String,
+    var creator: User,
+    var tracks: MutableList<Track> = mutableListOf()
+): BaseDocument()
