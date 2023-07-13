@@ -4,12 +4,10 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 
+
 @Service
-class SpotifyService {
-
-    private val webClient: WebClient = WebClient.create("https://api.spotify.com")
-
-    fun search(token: String, query: String): Mono<Object> {
+class SpotifyService(val webClient: WebClient) {
+    fun search(query: String): Mono<Object> {
         return webClient.get()
             .uri { uriBuilder ->
                 uriBuilder
@@ -18,7 +16,6 @@ class SpotifyService {
                     .queryParam("type", "track")
                     .build()
             }
-            .header("Authorization", "Bearer $token")
             .retrieve()
             .bodyToMono(Object::class.java)
     }

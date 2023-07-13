@@ -33,7 +33,7 @@ class CustomStatelessAuthorizationRequestRepository(
         exchange.removeAuthRequestCookie()
         return authRequestHolderRepository.findById(authId)
             .flatMap { holder ->
-                authRequestHolderRepository.remove(holder.id)
+                authRequestHolderRepository.remove(holder.id!!)
                     .thenReturn(secureSerializer.decrypt(holder.payload, OAuth2AuthorizationRequest::class.java))
             }
     }

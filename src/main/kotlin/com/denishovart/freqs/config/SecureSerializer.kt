@@ -1,6 +1,7 @@
 package com.denishovart.freqs.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.security.SecureRandom
@@ -14,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class SecureSerializer(
+    @Qualifier("authObjectMapper")
     private val objectMapper: ObjectMapper,
     @Value("\${app.encryption.password}")
     private val password: String

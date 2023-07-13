@@ -27,7 +27,7 @@ class CustomAuthenticationConverter(
                             .flatMap { authenticatedUser ->
                                 val authentication =
                                     UsernamePasswordAuthenticationToken(
-                                        authenticatedUser,
+                                        authenticatedUser.client!!.principalName,
                                         null,
                                         authenticatedUser.authorities
                                     )

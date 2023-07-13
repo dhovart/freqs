@@ -15,9 +15,9 @@ import reactor.core.publisher.Mono
 
 @Component
 class CustomRedirectFilter(
-    val customStatelessAuthorizationRequestResolver: CustomStatelessAuthorizationRequestResolver,
-    val customStatelessAuthorizationRequestRepository: CustomStatelessAuthorizationRequestRepository,
-    val jsonServerRedirectStrategy: ServerRedirectStrategy
+    private val customStatelessAuthorizationRequestResolver: CustomStatelessAuthorizationRequestResolver,
+    private val customStatelessAuthorizationRequestRepository: CustomStatelessAuthorizationRequestRepository,
+    private val jsonServerRedirectStrategy: ServerRedirectStrategy
 ) : WebFilter {
 
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {

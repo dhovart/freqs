@@ -15,14 +15,16 @@ class CustomAuthorizedClientService(private val authenticatedUserService: Authen
         clientRegistrationId: String?,
         principalName: String?
     ): Mono<T> {
-        throw UnsupportedOperationException()
+        return authenticatedUserService.loadAuthenticatedUser("${clientRegistrationId}_$principalName").map {
+            it.client as T
+        }
     }
 
     override fun removeAuthorizedClient(clientRegistrationId: String?, principalName: String?): Mono<Void>? {
         throw UnsupportedOperationException()
     }
 
-    override fun saveAuthorizedClient(client: OAuth2AuthorizedClient?, authentication: Authentication): Mono<Void>? {
-        return authenticatedUserService.saveNewAuthenticatedUser(authentication as OAuth2LoginAuthenticationToken).then()
+    override fun saveAuthorizedClient(client: OAuth2AuthorizedClient, authentication: Authentication): Mono<Void>? {
+        return authenticatedUserService.saveNewAuthenticatedUser(client, authentication as OAuth2LoginAuthenticationToken).then()
     }
 }

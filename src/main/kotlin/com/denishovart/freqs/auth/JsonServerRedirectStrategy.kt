@@ -3,6 +3,7 @@ package com.denishovart.freqs.auth
 import com.denishovart.freqs.auth.dto.RedirectStrategyPayload
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.web.server.ServerRedirectStrategy
@@ -14,8 +15,9 @@ import java.net.URI
 
 @Component
 class JsonServerRedirectStrategy(
-    val objectMapper: ObjectMapper,
-    val logger: Logger
+    @Qualifier("authObjectMapper")
+    private val objectMapper: ObjectMapper,
+    private val logger: Logger
 ) : ServerRedirectStrategy {
 
     override fun sendRedirect(exchange: ServerWebExchange, location: URI): Mono<Void> {

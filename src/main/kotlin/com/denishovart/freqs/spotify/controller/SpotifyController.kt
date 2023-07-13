@@ -15,7 +15,7 @@ class SpotifyController(
 ) {
 
     @QueryMapping
-    fun search(@Argument term: String, @AuthenticationPrincipal user: AuthenticatedUser): Mono<Object> {
-        return spotifyService.search(user.accessToken, term).map { it }
+    fun search(@Argument term: String): Mono<Object> {
+        return spotifyService.search(term).map { it }
     }
 }

@@ -1,6 +1,7 @@
 package com.denishovart.freqs.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -16,6 +17,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @Configuration
 class ReactiveRedisConfiguration(
     private val env: Environment,
+    @Qualifier("authObjectMapper")
     private val objectMapper: ObjectMapper
 ) {
     @Bean

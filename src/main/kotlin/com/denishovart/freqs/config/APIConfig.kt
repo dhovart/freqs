@@ -7,6 +7,7 @@ import graphql.scalars.`object`.ObjectScalar
 import graphql.schema.Coercing
 import graphql.schema.GraphQLScalarType
 import graphql.schema.idl.RuntimeWiring
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.graphql.execution.RuntimeWiringConfigurer
@@ -14,7 +15,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer
 @Configuration
 class APIConfig {
     @Bean
-    fun runtimeWiringConfigurer(objectMapper: ObjectMapper): RuntimeWiringConfigurer? {
+    fun runtimeWiringConfigurer(@Qualifier("defaultObjectMapper") objectMapper: ObjectMapper): RuntimeWiringConfigurer? {
         val jsonScalarType: GraphQLScalarType = GraphQLScalarType.newScalar()
             .name("JsonNode")
             .description("A JsonNode scalar")
@@ -26,7 +27,10 @@ class APIConfig {
         }
     }
 
-    class JsonNodeCoercing(private val objectMapper: ObjectMapper) : Coercing<JsonNode, Any> {
+    class JsonNodeCoercing(
+        @Qualifier("defaultObjectMapper")
+        private val objectMapper: ObjectMapper
+    ) : Coercing<JsonNode, Any> {
 
         override fun serialize(input: Any): Any {
             return input
