@@ -16,6 +16,6 @@ class SpotifyController(
 
     @QueryMapping
     fun search(@Argument term: String): Mono<Object> {
-        return spotifyService.search(term).map { it }
+        return spotifyService.search(term)
     }
 }
