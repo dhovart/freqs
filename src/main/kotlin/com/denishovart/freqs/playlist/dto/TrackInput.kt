@@ -1,7 +1,8 @@
-package com.denishovart.freqs.party.dto
+package com.denishovart.freqs.playlist.dto
 
-import com.denishovart.freqs.party.document.Artist
-import com.denishovart.freqs.party.document.Track
+import com.denishovart.freqs.playlist.document.Artist
+import com.denishovart.freqs.playlist.document.Track
+import com.denishovart.freqs.user.document.User
 import java.util.UUID
 
 data class TrackInput(
@@ -13,7 +14,7 @@ data class TrackInput(
     val spotifyAlbumId: String,
     val artists: List<Artist>
 ) {
-    fun toTrack(): Track {
+    fun toTrack(submittedBy: User): Track {
         val track = Track(
             name,
             albumName,
@@ -22,7 +23,8 @@ data class TrackInput(
             spotifyId,
             spotifyAlbumId,
             artists.toMutableList(),
-            mutableListOf()
+            mutableListOf(),
+            submittedBy
         )
         track.id = UUID.randomUUID()
         return track

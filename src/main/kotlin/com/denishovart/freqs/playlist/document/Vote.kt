@@ -1,4 +1,4 @@
-package com.denishovart.freqs.party.document
+package com.denishovart.freqs.playlist.document
 
 import com.denishovart.freqs.base.document.BaseDocument
 import com.denishovart.freqs.user.document.User

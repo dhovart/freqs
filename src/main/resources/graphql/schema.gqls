@@ -25,6 +25,7 @@ type Track {
     duration: Float!
     artists: [Artist!]!
     votes: [Vote!]!
+    submittedBy: User!
 }
 
 input TrackInput {
@@ -43,7 +44,7 @@ type User {
     picture: String
 }
 
-type Party {
+type Playlist {
     id: ID!
     name: String!
     creator: User!
@@ -56,12 +57,12 @@ scalar JsonNode
 type Query {
     me: User!
     search(term: String): JsonNode
-    parties(page: Int, size: Int): [Party]
-    party(id: ID): Party
+    playlists(page: Int, size: Int): [Playlist]
+    playlist(id: ID): Playlist
 }
 
 type Mutation {
-    createParty(name: String!): Party
-    addTrack(partyID: ID!, track: TrackInput!): Party
-    voteForTrack(partyID: ID!, trackID: ID!, comment: String): Party
+    createPlaylist(name: String!): Playlist
+    addTrack(playlistID: ID!, track: TrackInput!): Playlist
+    voteForTrack(playlistID: ID!, trackID: ID!, comment: String): Playlist
 }

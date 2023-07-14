@@ -1,4 +1,4 @@
-package com.denishovart.freqs.party.document
+package com.denishovart.freqs.playlist.document
 
 data class Artist(
     val name: String,
