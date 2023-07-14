@@ -1,6 +1,6 @@
 package com.denishovart.freqs.auth
 
-import com.denishovart.freqs.auth.service.AuthenticatedUserService
+import com.denishovart.freqs.auth.service.AuthorizedClientService
 import com.denishovart.freqs.config.SecureSerializer
 import com.denishovart.freqs.helper.getAuthId
 import org.springframework.security.core.Authentication
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class CustomAuthenticationConverter(
-    private val authenticatedUserService: AuthenticatedUserService,
+    private val authorizedUserService: AuthorizedClientService,
     private val secureSerializer: SecureSerializer
 ) : ServerAuthenticationConverter {
     override fun convert(exchange: ServerWebExchange): Mono<Authentication?> {
@@ -20,7 +20,7 @@ class CustomAuthenticationConverter(
             .flatMap {
                 Mono.justOrEmpty(it.getAuthId(secureSerializer))
                     .flatMap { authId ->
-                        authenticatedUserService.loadAuthenticatedUser(authId)
+                        authorizedUserService.loadAuthorizedUser(authId)
                             .flatMap { authenticatedUser ->
                                 val authentication =
                                     OAuth2AuthenticationToken(

@@ -3,7 +3,7 @@ package com.denishovart.freqs.config
 import com.denishovart.freqs.auth.*
 import com.denishovart.freqs.auth.filter.CustomRedirectFilter
 import com.denishovart.freqs.auth.repository.CustomStatelessAuthorizationRequestRepository
-import com.denishovart.freqs.auth.service.CustomAuthorizedClientService
+import com.denishovart.freqs.auth.service.AuthorizedClientService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatusCode
@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono
 class SecurityConfig(
     val customStatelessAuthorizationRequestRepository: CustomStatelessAuthorizationRequestRepository,
     val customStatelessAuthorizationRequestResolver: CustomStatelessAuthorizationRequestResolver,
-    val customAuthorizedClientService: CustomAuthorizedClientService,
+    val authorizedClientService: AuthorizedClientService,
     val oAuth2AuthenticationSuccessHandler: OAuth2AuthenticationSuccessHandler,
     val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
     val customRedirectFilter: CustomRedirectFilter,
@@ -76,7 +76,7 @@ class SecurityConfig(
             .oauth2Login {
                 it.authorizationRequestRepository(customStatelessAuthorizationRequestRepository)
                 it.authorizationRequestResolver(customStatelessAuthorizationRequestResolver)
-                it.authorizedClientService(customAuthorizedClientService)
+                it.authorizedClientService(authorizedClientService)
                 it.authenticationSuccessHandler(oAuth2AuthenticationSuccessHandler)
                 it.authenticationFailureHandler(oAuth2AuthenticationFailureHandler)
             }
