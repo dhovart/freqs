@@ -30,13 +30,26 @@ class PlaylistController(private val service: PlaylistService) {
     }
 
     @MutationMapping
-    fun createPlaylist(@Argument name: String, @AuthenticationPrincipal user: AuthenticatedUser): Mono<Playlist> {
-        return service.createPlaylist(name, user.toUserEntity())
+    fun createPlaylist(
+        @Argument name: String,
+        @Argument tracks: List<TrackInput>?,
+        @AuthenticationPrincipal user: AuthenticatedUser
+    ): Mono<Playlist> {
+        return service.createPlaylist(
+            name ?: "Untitled Playlist",
+            user.toUserEntity(),
+            tracks ?: listOf()
+        )
     }
 
     @MutationMapping
     fun addTrack(@Argument playlistID: UUID, @Argument track: TrackInput): Mono<Playlist> {
         return service.addTrackToPlaylist(playlistID, track)
+    }
+
+    @MutationMapping
+    fun updatePlaylistName(@Argument playlistID: UUID, @Argument name: String): Mono<Playlist> {
+        return service.updatePlaylistName(playlistID, name)
     }
 
     @MutationMapping

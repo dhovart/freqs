@@ -1,3 +1,5 @@
+scalar JsonNode
+
 type Artist {
     name: String!
     image: String
@@ -22,7 +24,7 @@ type Track {
     albumName: String!
     spotifyAlbumId: String
     image: String
-    duration: Float!
+    duration: Int!
     artists: [Artist!]!
     votes: [Vote!]!
     submittedBy: User!
@@ -34,7 +36,7 @@ input TrackInput {
     albumName: String!
     spotifyAlbumId: String
     image: String
-    duration: Float!
+    duration: Int!
     artists: [ArtistInput!]!
 }
 
@@ -52,8 +54,6 @@ type Playlist {
     tracks: [Track]!
 }
 
-scalar JsonNode
-
 type Query {
     me: User!
     search(term: String): JsonNode
@@ -62,7 +62,8 @@ type Query {
 }
 
 type Mutation {
-    createPlaylist(name: String!): Playlist
+    createPlaylist(name: String, tracks: [TrackInput!]): Playlist
     addTrack(playlistID: ID!, track: TrackInput!): Playlist
     voteForTrack(playlistID: ID!, trackID: ID!, comment: String): Playlist
+    updatePlaylistName(playlistID: ID!, name: String!): Playlist
 }

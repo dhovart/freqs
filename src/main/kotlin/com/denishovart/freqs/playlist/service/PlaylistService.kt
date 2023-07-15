@@ -17,8 +17,8 @@ import java.util.*
 class PlaylistService(
     private val repository: PlaylistRepository,
 ) {
-    fun createPlaylist(name: String, user: User): Mono<Playlist> {
-        val playlist = Playlist(name, user)
+    fun createPlaylist(name: String, user: User, tracks: List<TrackInput> = listOf()): Mono<Playlist> {
+        val playlist = Playlist(name, user, tracks.map { it.toTrack(submittedBy = user) }.toMutableList())
         return repository.save(playlist)
     }
 
@@ -46,5 +46,12 @@ class PlaylistService(
 
     fun findPlaylist(id: UUID): Mono<Playlist> {
         return repository.findById(id)
+    }
+
+    fun updatePlaylistName(playlistID: UUID, name: String): Mono<Playlist> {
+        return repository.findById(playlistID).flatMap {
+            it.name = name
+            repository.save(it)
+        }
     }
 }

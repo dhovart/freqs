@@ -7,7 +7,7 @@ data class Track(
     var name: String,
     val albumName: String,
     val image: String?,
-    val duration: Float,
+    val duration: Int,
     val spotifyId: String,
     val spotifyAlbumId: String,
     val artists: MutableList<Artist>,

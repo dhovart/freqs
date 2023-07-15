@@ -11,7 +11,6 @@ import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuth
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
-
 @Service
 class AuthorizedClientService(
     private val repository: AuthenticatedUserRepository
