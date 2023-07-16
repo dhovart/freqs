@@ -2,6 +2,7 @@ package com.denishovart.freqs.playlist.controller
 
 import com.denishovart.freqs.auth.entity.AuthenticatedUser
 import com.denishovart.freqs.playlist.document.Playlist
+import com.denishovart.freqs.playlist.dto.TrackAddedEvent
 import com.denishovart.freqs.playlist.dto.TrackInput
 import com.denishovart.freqs.playlist.service.PlaylistService
 import org.springframework.data.domain.PageRequest
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
 import org.springframework.graphql.data.method.annotation.QueryMapping
+import org.springframework.graphql.data.method.annotation.SubscriptionMapping
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import reactor.core.publisher.Flux
@@ -50,6 +52,11 @@ class PlaylistController(private val service: PlaylistService) {
     @MutationMapping
     fun updatePlaylistName(@Argument playlistID: UUID, @Argument name: String): Mono<Playlist> {
         return service.updatePlaylistName(playlistID, name)
+    }
+
+    @SubscriptionMapping
+    fun trackAdded(): Flux<TrackAddedEvent> {
+        return service.trackAddedFlux
     }
 
     @MutationMapping

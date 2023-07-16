@@ -3,6 +3,7 @@ package com.denishovart.freqs.playlist.service
 import com.denishovart.freqs.auth.entity.AuthenticatedUser
 import com.denishovart.freqs.playlist.document.Playlist
 import com.denishovart.freqs.playlist.document.Vote
+import com.denishovart.freqs.playlist.dto.TrackAddedEvent
 import com.denishovart.freqs.playlist.dto.TrackInput
 import com.denishovart.freqs.playlist.repository.PlaylistRepository
 import com.denishovart.freqs.user.document.User
@@ -11,12 +12,16 @@ import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Sinks
 import java.util.*
 
 @Service
 class PlaylistService(
     private val repository: PlaylistRepository,
 ) {
+    private val trackAddedSink = Sinks.many().multicast().onBackpressureBuffer<TrackAddedEvent>()
+    val trackAddedFlux: Flux<TrackAddedEvent> = trackAddedSink.asFlux()
+
     fun createPlaylist(name: String, user: User, tracks: List<TrackInput> = listOf()): Mono<Playlist> {
         val playlist = Playlist(name, user, tracks.map { it.toTrack(submittedBy = user) }.toMutableList())
         return repository.save(playlist)
@@ -28,7 +33,9 @@ class PlaylistService(
                 val user = it.authentication.principal as AuthenticatedUser
                 var track = trackInput.toTrack(submittedBy = user.toUserEntity())
                 playlist.tracks.add(track)
-                repository.save(playlist)
+                repository.save(playlist).doOnNext {
+                    trackAddedSink.tryEmitNext(TrackAddedEvent(it.id!!, track))
+                }
             }
         }
     }

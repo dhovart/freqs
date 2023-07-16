@@ -67,3 +67,12 @@ type Mutation {
     voteForTrack(playlistID: ID!, trackID: ID!, comment: String): Playlist
     updatePlaylistName(playlistID: ID!, name: String!): Playlist
 }
+
+type TrackAddedEvent {
+    playlistId: ID!
+    track: Track!
+}
+
+type Subscription {
+    trackAdded: TrackAddedEvent
+}
