@@ -13,14 +13,18 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
+import reactor.util.concurrent.Queues
 import java.util.*
 
 @Service
 class PlaylistService(
     private val repository: PlaylistRepository,
 ) {
-    private val trackAddedSink = Sinks.many().multicast().onBackpressureBuffer<TrackAddedEvent>()
-    val trackAddedFlux: Flux<TrackAddedEvent> = trackAddedSink.asFlux()
+    private val trackAddedSink = Sinks.many().multicast().onBackpressureBuffer<TrackAddedEvent>(Queues.SMALL_BUFFER_SIZE, false)
+
+    fun getTrackAddedPublisher(): Flux<TrackAddedEvent> {
+        return trackAddedSink.asFlux()
+    }
 
     fun createPlaylist(name: String, user: User, tracks: List<TrackInput> = listOf()): Mono<Playlist> {
         val playlist = Playlist(name, user, tracks.map { it.toTrack(submittedBy = user) }.toMutableList())

@@ -15,7 +15,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.stereotype.Controller
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.UUID
+import reactor.core.scheduler.Schedulers
+import java.time.Duration
+import java.util.*
 
 @Controller
 class PlaylistController(private val service: PlaylistService) {
@@ -55,8 +57,8 @@ class PlaylistController(private val service: PlaylistService) {
     }
 
     @SubscriptionMapping
-    fun trackAdded(): Flux<TrackAddedEvent> {
-        return service.trackAddedFlux
+    fun trackAdded(@Argument playlistID: UUID): Flux<TrackAddedEvent> {
+        return service.getTrackAddedPublisher().filter { it.playlistId == playlistID }
     }
 
     @MutationMapping

@@ -19,6 +19,8 @@ spring:
     graphiql:
       enabled: ${ENABLE_GRAPHIQL}
       path: /graphiql
+    websocket:
+      path: /graphql
 
   data:
     redis:

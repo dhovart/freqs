@@ -69,10 +69,10 @@ type Mutation {
 }
 
 type TrackAddedEvent {
-    playlistId: ID!
+    playlistID: ID!
     track: Track!
 }
 
 type Subscription {
-    trackAdded: TrackAddedEvent
+    trackAdded(playlistID: ID!): TrackAddedEvent
 }
