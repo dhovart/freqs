@@ -4,6 +4,7 @@ import com.denishovart.freqs.auth.entity.AuthenticatedUser
 import com.denishovart.freqs.playlist.document.Playlist
 import com.denishovart.freqs.playlist.dto.TrackAddedEvent
 import com.denishovart.freqs.playlist.dto.TrackInput
+import com.denishovart.freqs.playlist.dto.TrackMovedEvent
 import com.denishovart.freqs.playlist.service.PlaylistService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -58,7 +59,7 @@ class PlaylistController(private val service: PlaylistService) {
 
     @SubscriptionMapping
     fun trackAdded(@Argument playlistID: UUID): Flux<TrackAddedEvent> {
-        return service.getTrackAddedPublisher().filter { it.playlistId == playlistID }
+        return service.getTrackAddedPublisher().filter { it.playlistID == playlistID }
     }
 
     @MutationMapping
@@ -69,6 +70,24 @@ class PlaylistController(private val service: PlaylistService) {
         @AuthenticationPrincipal user: AuthenticatedUser
     ): Mono<Playlist> {
         return service.voteForTrack(playlistID, trackID, user.toUserEntity(), comment)
+    }
+
+    @MutationMapping
+    fun updatePlaylistTrackPosition(
+        @Argument playlistID: UUID,
+        @Argument trackID: UUID,
+        @Argument newPosition: Int
+    ): Mono<Playlist> {
+        return service.movePlaylistTrack(
+            playlistID,
+            trackID,
+            newPosition
+        )
+    }
+
+    @SubscriptionMapping
+    fun trackMoved(@Argument playlistID: UUID): Flux<TrackMovedEvent> {
+        return service.getTrackMovedPublisher().filter { it.playlistID == playlistID }
     }
 
 

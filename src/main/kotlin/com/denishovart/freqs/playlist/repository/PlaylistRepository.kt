@@ -12,7 +12,7 @@ import java.util.*
 @Repository
 interface PlaylistRepository : ReactiveMongoRepository<Playlist, UUID> {
     @Query("{ id: { \$exists: true }}")
-    fun findAllPartiesPaged(page: Pageable): Flux<Playlist?>?
+    fun findAllPlaylistsPaged(page: Pageable): Flux<Playlist?>?
 
 
 }

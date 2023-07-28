@@ -30,6 +30,18 @@ type Track {
     submittedBy: User!
 }
 
+type User {
+    id: ID!
+    name: String!
+    picture: String
+}
+
+input UserInput {
+    id: ID!
+    name: String!
+    picture: String
+}
+
 input TrackInput {
     spotifyId: String!
     name: String!
@@ -38,12 +50,6 @@ input TrackInput {
     image: String
     duration: Int!
     artists: [ArtistInput!]!
-}
-
-type User {
-    id: ID!
-    name: String!
-    picture: String
 }
 
 type Playlist {
@@ -66,6 +72,7 @@ type Mutation {
     addTrack(playlistID: ID!, track: TrackInput!): Playlist
     voteForTrack(playlistID: ID!, trackID: ID!, comment: String): Playlist
     updatePlaylistName(playlistID: ID!, name: String!): Playlist
+    updatePlaylistTrackPosition(playlistID: ID!, trackID: ID!, newPosition: Int!): Playlist
 }
 
 type TrackAddedEvent {
@@ -73,6 +80,15 @@ type TrackAddedEvent {
     track: Track!
 }
 
+type TrackMovedEvent {
+    playlistID: ID!
+    trackID: ID!
+    oldPosition: Int!
+    newPosition: Int!
+    user: User!
+}
+
 type Subscription {
     trackAdded(playlistID: ID!): TrackAddedEvent
+    trackMoved(playlistID: ID!): TrackMovedEvent
 }
